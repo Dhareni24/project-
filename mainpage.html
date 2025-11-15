@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NGO Recommendation System</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: 0;
+      padding: 20px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+    }
+    
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      background: white;
+      padding: 30px;
+      border-radius: 15px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    }
+    
+    h1 {
+      text-align: center;
+      color: #2c3e50;
+      margin-bottom: 30px;
+      font-size: 2.5em;
+    }
+    
+    .form-row {
+      display: flex;
+      gap: 15px;
+      margin-bottom: 20px;
+    }
+    
+    .form-group {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+    
+    label {
+      font-weight: 600;
+      color: #34495e;
+      margin-bottom: 8px;
+    }
+    
+    input[type="text"], select {
+      padding: 12px;
+      border: 2px solid #e1e5e9;
+      border-radius: 8px;
+      font-size: 16px;
+      transition: border-color 0.3s ease;
+    }
+    
+    input[type="text"]:focus, select:focus {
+      outline: none;
+      border-color: #3498db;
+    }
+    
+    button {
+      background: linear-gradient(135deg, #3498db, #2980b9);
+      color: white;
+      padding: 15px 30px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 16px;
+      font-weight: 600;
+      transition: transform 0.2s ease;
+      width: 100%;
+      margin-top: 10px;
+    }
+    
+    button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(52, 152, 219, 0.4);
+    }
+    
+    button:disabled {
+      background: #bdc3c7;
+      cursor: not-allowed;
+      transform: none;
+    }
+    
+    #results {
+      margin-top: 30px;
+    }
+    
+    .results-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      padding-bottom: 10px;
+      border-bottom: 2px solid #ecf0f1;
+    }
+    
+    .results-count {
+      font-weight: 600;
+      color: #7f8c8d;
+    }
+    
+    .ngo-card {
+      background: #f8f9fa;
+      padding: 20px;
+      border-radius: 10px;
+      margin-bottom: 15px;
+      border-left: 4px solid #3498db;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    
+    .ngo-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+    
+    .ngo-card h3 {
+      margin: 0 0 10px 0;
+      color: #2c3e50;
+      font-size: 1.4em;
+    }
+    
+    .ngo-info {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 15px;
+    }
+    
+    .info-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .info-label {
+      font-weight: 600;
+      color: #7f8c8d;
+      min-width: 80px;
+    }
+    
+    .info-value {
+      color: #2c3e50;
+    }
+    
+    .sdg-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 5px;
+      margin-top: 10px;
+    }
+    
+    .sdg-tag {
+      background: #3498db;
+      color: white;
+      padding: 4px 8px;
+      border-radius: 12px;
+      font-size: 12px;
+      font-weight: 500;
+    }
+    
+    .contact-info {
+      margin-top: 15px;
+      padding-top: 15px;
+      border-top: 1px solid #ecf0f1;
+      display: flex;
+      gap: 15px;
+    }
+    
+    .contact-link {
+      color: #3498db;
+      text-decoration: none;
+      font-weight: 500;
+    }
+    
+    .contact-link:hover {
+      text-decoration: underline;
+    }
+    
+    .no-results {
+      text-align: center;
+      padding: 40px 20px;
+      color: #7f8c8d;
+      font-size: 1.1em;
+    }
+    
+    .loading {
+      text-align: center;
+      padding: 20px;
+      color: #3498db;
+      font-size: 1.1em;
+    }
+    
+    @media (max-width: 768px) {
+      .container {
+        margin: 10px;
+        padding: 20px;
+      }
+      
+      .form-row {
+        flex-direction: column;
+      }
+      
+      .ngo-info {
+        grid-template-columns: 1fr;
+      }
+      
+      h1 {
+        font-size: 2em;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🌟 NGO Recommendation System</h1>
+    
+    <form id="ngoForm">
+      <div class="form-row">
+        <div class="form-group">
+          <label for="cause">What cause interests you?</label>
+          <select id="cause" name="cause">
+            <option value="">All Causes</option>
+            <option value="education">Education</option>
+            <option value="healthcare">Healthcare</option>
+            <option value="environment">Environment</option>
+            <option value="women empowerment">Women Empowerment</option>
+            <option value="agriculture">Agriculture</option>
+            <option value="disaster relief">Disaster Relief</option>
+            <option value="youth development">Youth Development</option>
+            <option value="rights">Rights & Inclusion</option>
+          </select>
+        </div>
+        
+        <div class="form-group">
+          <label for="state">Select State:</label>
+          <select id="state" name="state">
+            <option value="">All States</option>
+          </select>
+        </div>
+      </div>
+      
+      <div class="form-row">
+        <div class="form-group">
+          <label for="city">Select City:</label>
+          <select id="city" name="city">
+            <option value="">All Cities</option>
+          </select>
+        </div>
+        
+        <div class="form-group">
+          <label for="sdg">SDG Focus:</label>
+          <select id="sdg" name="sdg">
+            <option value="">All SDGs</option>
+          </select>
+        </div>
+      </div>
+      
+      <button type="submit" id="searchBtn">🔍 Find NGOs</button>
+    </form>
+    
+    <div id="results"></div>
+  </div>
+
+  <script>
+    // Complete NGO data from your CSV
+    const ngos = [
+      {"id": "1", "name": "Asha Trust", "location_state": "Tamil Nadu", "location_city": "Chennai", "causes": "women empowerment, entrepreneurship, livelihoods, skill development", "sdg": "SDG 1 No Poverty; SDG 5 Gender Equality; SDG 8 Decent Work", "website": "https://example.org/asha-trust", "contact_email": "contact@ashatrust.org", "description": "Empowers rural and urban poor women through entrepreneurship training, microcredit linkages, and market access programs in and around Chennai."},
+      {"id": "2", "name": "EduCare Foundation", "location_state": "Karnataka", "location_city": "Bengaluru", "causes": "education, girl child, scholarships, digital literacy", "sdg": "SDG 4 Quality Education; SDG 10 Reduced Inequalities", "website": "https://example.org/educare", "contact_email": "hello@educare.org", "description": "Provides scholarships and after-school support for underprivileged children, with a focus on girl child education and STEM digital literacy."},
+      {"id": "3", "name": "Green Earth Collective", "location_state": "Maharashtra", "location_city": "Pune", "causes": "environment, climate action, tree plantation, waste management", "sdg": "SDG 13 Climate Action; SDG 11 Sustainable Cities", "website": "https://example.org/greenearth", "contact_email": "team@greenearth.org", "description": "Runs urban afforestation, plastic waste reduction drives, and climate education workshops for schools and housing societies in Pune."},
+      {"id": "4", "name": "Seva Health Network", "location_state": "Tamil Nadu", "location_city": "Coimbatore", "causes": "healthcare, maternal health, preventive care, screenings", "sdg": "SDG 3 Good Health and Well-Being", "website": "https://example.org/seva-health", "contact_email": "support@sevahealth.org", "description": "Organizes free medical camps, maternal health checkups, vaccination awareness, and telemedicine for underserved rural blocks near Coimbatore."},
+      {"id": "5", "name": "Relief India", "location_state": "Assam", "location_city": "Guwahati", "causes": "disaster relief, floods, emergency response, shelter", "sdg": "SDG 11 Sustainable Cities; SDG 13 Climate Action; SDG 17 Partnerships", "website": "https://example.org/relief-india", "contact_email": "ops@reliefindia.org", "description": "Coordinates flood relief, temporary shelters, and distribution of essentials during monsoons across Brahmaputra basin; partners with local volunteers."},
+      {"id": "6", "name": "NGO 6", "location_state": "Kerala", "location_city": "Kochi", "causes": "education, literacy, digital skills", "sdg": "SDG 4 Quality Education", "website": "https://example.org/ngo6", "contact_email": "contact@ngo6.org", "description": "NGO 6 works in Kochi, Kerala focusing on education, literacy, digital skills. It contributes to SDG 4 Quality Education."},
+      {"id": "7", "name": "NGO 7", "location_state": "Kerala", "location_city": "Thiruvananthapuram", "causes": "women empowerment, self help groups", "sdg": "SDG 5 Gender Equality", "website": "https://example.org/ngo7", "contact_email": "contact@ngo7.org", "description": "NGO 7 works in Thiruvananthapuram, Kerala focusing on women empowerment, self help groups. It contributes to SDG 5 Gender Equality."},
+      {"id": "8", "name": "NGO 8", "location_state": "Delhi", "location_city": "New Delhi", "causes": "healthcare, sanitation, nutrition", "sdg": "SDG 3 Good Health and Well-Being", "website": "https://example.org/ngo8", "contact_email": "contact@ngo8.org", "description": "NGO 8 works in New Delhi, Delhi focusing on healthcare, sanitation, nutrition. It contributes to SDG 3 Good Health and Well-Being."},
+      {"id": "9", "name": "NGO 9", "location_state": "Uttar Pradesh", "location_city": "Lucknow", "causes": "agriculture, farmer welfare", "sdg": "SDG 2 Zero Hunger", "website": "https://example.org/ngo9", "contact_email": "contact@ngo9.org", "description": "NGO 9 works in Lucknow, Uttar Pradesh focusing on agriculture, farmer welfare. It contributes to SDG 2 Zero Hunger."},
+      {"id": "10", "name": "NGO 10", "location_state": "Bihar", "location_city": "Patna", "causes": "environment, biodiversity, conservation", "sdg": "SDG 13 Climate Action", "website": "https://example.org/ngo10", "contact_email": "contact@ngo10.org", "description": "NGO 10 works in Patna, Bihar focusing on environment, biodiversity, conservation. It contributes to SDG 13 Climate Action."},
+      {"id": "11", "name": "NGO 11", "location_state": "Madhya Pradesh", "location_city": "Bhopal", "causes": "youth development, skills training", "sdg": "SDG 8 Decent Work", "website": "https://example.org/ngo11", "contact_email": "contact@ngo11.org", "description": "NGO 11 works in Bhopal, Madhya Pradesh focusing on youth development, skills training. It contributes to SDG 8 Decent Work."},
+      {"id": "12", "name": "NGO 12", "location_state": "Gujarat", "location_city": "Ahmedabad", "causes": "rights, inclusion, disability", "sdg": "SDG 10 Reduced Inequalities", "website": "https://example.org/ngo12", "contact_email": "contact@ngo12.org", "description": "NGO 12 works in Ahmedabad, Gujarat focusing on rights, inclusion, disability. It contributes to SDG 10 Reduced Inequalities."},
+      {"id": "13", "name": "NGO 13", "location_state": "Punjab", "location_city": "Amritsar", "causes": "disaster relief, emergency response", "sdg": "SDG 11 Sustainable Cities", "website": "https://example.org/ngo13", "contact_email": "contact@ngo13.org", "description": "NGO 13 works in Amritsar, Punjab focusing on disaster relief, emergency response. It contributes to SDG 11 Sustainable Cities."},
+      {"id": "14", "name": "NGO 14", "location_state": "Odisha", "location_city": "Bhubaneswar", "causes": "education, literacy, digital skills", "sdg": "SDG 4 Quality Education", "website": "https://example.org/ngo14", "contact_email": "contact@ngo14.org", "description": "NGO 14 works in Bhubaneswar, Odisha focusing on education, literacy, digital skills. It contributes to SDG 4 Quality Education."},
+      {"id": "15", "name": "NGO 15", "location_state": "West Bengal", "location_city": "Kolkata", "causes": "women empowerment, self help groups", "sdg": "SDG 5 Gender Equality", "website": "https://example.org/ngo15", "contact_email": "contact@ngo15.org", "description": "NGO 15 works in Kolkata, West Bengal focusing on women empowerment, self help groups. It contributes to SDG 5 Gender Equality."},
+      {"id": "16", "name": "NGO 16", "location_state": "Jharkhand", "location_city": "Ranchi", "causes": "healthcare, sanitation, nutrition", "sdg": "SDG 3 Good Health and Well-Being", "website": "https://example.org/ngo16", "contact_email": "contact@ngo16.org", "description": "NGO 16 works in Ranchi, Jharkhand focusing on healthcare, sanitation, nutrition. It contributes to SDG 3 Good Health and Well-Being."},
+      {"id": "17", "name": "NGO 17", "location_state": "Haryana", "location_city": "Gurgaon", "causes": "agriculture, farmer welfare", "sdg": "SDG 2 Zero Hunger", "website": "https://example.org/ngo17", "contact_email": "contact@ngo17.org", "description": "NGO 17 works in Gurgaon, Haryana focusing on agriculture, farmer welfare. It contributes to SDG 2 Zero Hunger."},
+      {"id": "18", "name": "NGO 18", "location_state": "Chhattisgarh", "location_city": "Raipur", "causes": "environment, biodiversity, conservation", "sdg": "SDG 13 Climate Action", "website": "https://example.org/ngo18", "contact_email": "contact@ngo18.org", "description": "NGO 18 works in Raipur, Chhattisgarh focusing on environment, biodiversity, conservation. It contributes to SDG 13 Climate Action."},
+      {"id": "19", "name": "NGO 19", "location_state": "Rajasthan", "location_city": "Jaipur", "causes": "youth development, skills training", "sdg": "SDG 8 Decent Work", "website": "https://example.org/ngo19", "contact_email": "contact@ngo19.org", "description": "NGO 19 works in Jaipur, Rajasthan focusing on youth development, skills training. It contributes to SDG 8 Decent Work."},
+      {"id": "20", "name": "NGO 20", "location_state": "Goa", "location_city": "Panaji", "causes": "rights, inclusion, disability", "sdg": "SDG 10 Reduced Inequalities", "website": "https://example.org/ngo20", "contact_email": "contact@ngo20.org", "description": "NGO 20 works in Panaji, Goa focusing on rights, inclusion, disability. It contributes to SDG 10 Reduced Inequalities."},
+      {"id": "21", "name": "NGO 21", "location_state": "Manipur", "location_city": "Imphal", "causes": "disaster relief, emergency response", "sdg": "SDG 11 Sustainable Cities", "website": "https://example.org/ngo21", "contact_email": "contact@ngo21.org", "description": "NGO 21 works in Imphal, Manipur focusing on disaster relief, emergency response. It contributes to SDG 11 Sustainable Cities."},
+      {"id": "22", "name": "NGO 22", "location_state": "Nagaland", "location_city": "Kohima", "causes": "education, literacy, digital skills", "sdg": "SDG 4 Quality Education", "website": "https://example.org/ngo22", "contact_email": "contact@ngo22.org", "description": "NGO 22 works in Kohima, Nagaland focusing on education, literacy, digital skills. It contributes to SDG 4 Quality Education."},
+      {"id": "23", "name": "NGO 23", "location_state": "Mizoram", "location_city": "Aizawl", "causes": "women empowerment, self help groups", "sdg": "SDG 5 Gender Equality", "website": "https://example.org/ngo23", "contact_email": "contact@ngo23.org", "description": "NGO 23 works in Aizawl, Mizoram focusing on women empowerment, self help groups. It contributes to SDG 5 Gender Equality."},
+      {"id": "24", "name": "NGO 24", "location_state": "Tripura", "location_city": "Agartala", "causes": "healthcare, sanitation, nutrition", "sdg": "SDG 3 Good Health and Well-Being", "website": "https://example.org/ngo24", "contact_email": "contact@ngo24.org", "description": "NGO 24 works in Agartala, Tripura focusing on healthcare, sanitation, nutrition. It contributes to SDG 3 Good Health and Well-Being."},
+      {"id": "25", "name": "NGO 25", "location_state": "Meghalaya", "location_city": "Shillong", "causes": "agriculture, farmer welfare", "sdg": "SDG 2 Zero Hunger", "website": "https://example.org/ngo25", "contact_email": "contact@ngo25.org", "description": "NGO 25 works in Shillong, Meghalaya focusing on agriculture, farmer welfare. It contributes to SDG 2 Zero Hunger."},
+      {"id": "26", "name": "NGO 26", "location_state": "Sikkim", "location_city": "Gangtok", "causes": "environment, biodiversity, conservation", "sdg": "SDG 13 Climate Action", "website": "https://example.org/ngo26", "contact_email": "contact@ngo26.org", "description": "NGO 26 works in Gangtok, Sikkim focusing on environment, biodiversity, conservation. It contributes to SDG 13 Climate Action."},
+      {"id": "27", "name": "NGO 27", "location_state": "Arunachal Pradesh", "location_city": "Itanagar", "causes": "youth development, skills training", "sdg": "SDG 8 Decent Work", "website": "https://example.org/ngo27", "contact_email": "contact@ngo27.org", "description": "NGO 27 works in Itanagar, Arunachal Pradesh focusing on youth development, skills training. It contributes to SDG 8 Decent Work."},
+      {"id": "28", "name": "NGO 28", "location_state": "Andhra Pradesh", "location_city": "Vijayawada", "causes": "rights, inclusion, disability", "sdg": "SDG 10 Reduced Inequalities", "website": "https://example.org/ngo28", "contact_email": "contact@ngo28.org", "description": "NGO 28 works in Vijayawada, Andhra Pradesh focusing on rights, inclusion, disability. It contributes to SDG 10 Reduced Inequalities."},
+      {"id": "29", "name": "NGO 29", "location_state": "Telangana", "location_city": "Hyderabad", "causes": "disaster relief, emergency response", "sdg": "SDG 11 Sustainable Cities", "website": "https://example.org/ngo29", "contact_email": "contact@ngo29.org", "description": "NGO 29 works in Hyderabad, Telangana focusing on disaster relief, emergency response. It contributes to SDG 11 Sustainable Cities."},
+      {"id": "30", "name": "NGO 30", "location_state": "Tamil Nadu", "location_city": "Madurai", "causes": "education, literacy, digital skills", "sdg": "SDG 4 Quality Education", "website": "https://example.org/ngo30", "contact_email": "contact@ngo30.org", "description": "NGO 30 works in Madurai, Tamil Nadu focusing on education, literacy, digital skills. It contributes to SDG 4 Quality Education."}
+    ];
+
+    // Populate dropdowns
+    function populateDropdowns() {
+      const states = [...new Set(ngos.map(ngo => ngo.location_state))].sort();
+      const stateSelect = document.getElementById('state');
+      states.forEach(state => {
+        const option = document.createElement('option');
+        option.value = state;
+        option.textContent = state;
+        stateSelect.appendChild(option);
+      });
+
+      // Populate SDG dropdown
+      const allSDGs = [...new Set(ngos.flatMap(ngo => 
+        ngo.sdg.split(';').map(sdg => sdg.trim())
+      ))].sort();
+      
+      const sdgSelect = document.getElementById('sdg');
+      allSDGs.forEach(sdg => {
+        const option = document.createElement('option');
+        option.value = sdg;
+        option.textContent = sdg;
+        sdgSelect.appendChild(option);
+      });
+    }
+
+    // Update cities based on selected state
+    document.getElementById('state').addEventListener('change', function() {
+      const selectedState = this.value;
+      const citySelect = document.getElementById('city');
+      
+      // Clear existing options
+      citySelect.innerHTML = '<option value="">All Cities</option>';
+      
+      if (selectedState) {
+        const cities = [...new Set(ngos
+          .filter(ngo => ngo.location_state === selectedState)
+          .map(ngo => ngo.location_city)
+        )].sort();
+        
+        cities.forEach(city => {
+          const option = document.createElement('option');
+          option.value = city;
+          option.textContent = city;
+          citySelect.appendChild(option);
+        });
+      }
+    });
+
+    // Search functionality
+    document.getElementById('ngoForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      
+      const cause = document.getElementById('cause').value.toLowerCase();
+      const state = document.getElementById('state').value;
+      const city = document.getElementById('city').value;
+      const sdg = document.getElementById('sdg').value;
+      const resultsDiv = document.getElementById('results');
+      
+      resultsDiv.innerHTML = '<div class="loading">🔍 Searching for NGOs...</div>';
+      
+      setTimeout(() => {
+        // Filter NGOs based on criteria
+        let filtered = ngos;
+        
+        if (cause) {
+          filtered = filtered.filter(ngo => ngo.causes && ngo.causes.toLowerCase().includes(cause));
+        }
+        if (state) {
+          filtered = filtered.filter(ngo => ngo.location_state === state);
+        }
+        if (city) {
+          filtered = filtered.filter(ngo => ngo.location_city === city);
+        }
+        if (sdg) {
+          filtered = filtered.filter(ngo => ngo.sdg && ngo.sdg.includes(sdg));
+        }
+        
+        displayResults(filtered);
+      }, 500);
+    });
+
+    function displayResults(results) {
+      const resultsDiv = document.getElementById('results');
+      
+      if (results.length === 0) {
+        resultsDiv.innerHTML = `
+          <div class="no-results">
+            <h3>No NGOs found</h3>
+            <p>Try adjusting your search criteria to find more organizations.</p>
+          </div>
+        `;
+        return;
+      }
+      
+      const resultsHTML = `
+        <div class="results-header">
+          <h2>Recommended NGOs</h2>
+          <span class="results-count">${results.length} organization${results.length > 1 ? 's' : ''} found</span>
+        </div>
+        ${results.map(ngo => `
+          <div class="ngo-card">
+            <h3>${ngo.name}</h3>
+            <div class="ngo-info">
+              <div class="info-item">
+                <span class="info-label">📍 Location:</span>
+                <span class="info-value">${ngo.location_city}, ${ngo.location_state}</span>
+              </div>
+              <div class="info-item">
+                <span class="info-label">🎯 Focus:</span>
+                <span class="info-value">${ngo.causes}</span>
+              </div>
+            </div>
+            <p><strong>Description:</strong> ${ngo.description}</p>
+            <div class="sdg-tags">
+              ${ngo.sdg.split(';').map(sdg => `<span class="sdg-tag">${sdg.trim()}</span>`).join('')}
+            </div>
+            <div class="contact-info">
+              <a href="${ngo.website}" class="contact-link" target="_blank">🌐 Visit Website</a>
+              <a href="mailto:${ngo.contact_email}" class="contact-link">📧 Send Email</a>
+            </div>
+          </div>
+        `).join('')}
+      `;
+      
+      resultsDiv.innerHTML = resultsHTML;
+    }
+
+    // Initialize the app
+    populateDropdowns();
+  </script>
+</body>
+</html>

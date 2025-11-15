@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Help & Donation Portal</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 50px;
+            color: white;
+        }
+
+        .header h1 {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            max-width: 600px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 30px;
+            margin-bottom: 50px;
+        }
+
+        .service-card {
+            background: white;
+            border-radius: 20px;
+            padding: 40px 30px;
+            text-align: center;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .service-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+            background: var(--card-color);
+        }
+
+        .service-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 25px 50px rgba(0,0,0,0.2);
+        }
+
+        .service-card.help {
+            --card-color: #4CAF50;
+        }
+
+        .service-card.donate {
+            --card-color: #FF6B6B;
+        }
+
+        .service-card.events {
+            --card-color: #4ECDC4;
+        }
+
+        .service-card.register {
+            --card-color: #45B7D1;
+        }
+
+        .service-card.schemes {
+            --card-color: #96CEB4;
+        }
+
+        .card-icon {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 25px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            color: white;
+            background: var(--card-color);
+        }
+
+        .card-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: #333;
+        }
+
+        .card-description {
+            color: #666;
+            line-height: 1.6;
+            margin-bottom: 25px;
+        }
+
+        .card-button {
+            background: var(--card-color);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 25px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1rem;
+        }
+
+        .card-button:hover {
+            background: rgba(0,0,0,0.8);
+            transform: scale(1.05);
+        }
+
+        .stats-section {
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 40px;
+            text-align: center;
+            color: white;
+            margin-top: 40px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 30px;
+            margin-top: 30px;
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .stat-label {
+            font-size: 1rem;
+            opacity: 0.8;
+        }
+
+        .contact-info {
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 30px;
+            text-align: center;
+            color: white;
+            margin-top: 30px;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .services-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+            
+            .service-card {
+                padding: 30px 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Help & Support Portal</h1>
+            <p>Your one-stop destination for community support, donations, and volunteer opportunities. Together, we can make a difference in people's lives.</p>
+        </div>
+
+        <div class="services-grid">
+            <div class="service-card help" onclick="handleCardClick('help')">
+                <div class="card-icon">🆘</div>
+                <h3 class="card-title">Get Help</h3>
+                <p class="card-description">Need assistance? Our support team is here to help you with emergency aid, counseling, and resources.</p>
+                <button class="card-button" onclick="navigateTo('inspiration.html')">Request Help</button>
+            </div>
+
+            <div class="service-card donate" onclick="handleCardClick('donate')">
+                <div class="card-icon">💝</div>
+                <h3 class="card-title">Donate</h3>
+                <p class="card-description">Make a difference with your generous contribution. Every donation helps us serve those in need.</p>
+                <button class="card-button" onclick="navigateTo('work.html')">Request Help</button>
+            </div>
+
+            <div class="service-card events" onclick="handleCardClick('events')">
+                <div class="card-icon">📅</div>
+                <h3 class="card-title">Events</h3>
+                <p class="card-description">Join our community events, fundraisers, and volunteer activities happening in your area.</p>
+                <button class="card-button" onclick="navigateTo('groceries.html')">Request Help</button>
+            </div>
+
+            <div class="service-card register" onclick="handleCardClick('register')">
+                <div class="card-icon">📝</div>
+                <h3 class="card-title">New Donor Registration</h3>
+                <p class="card-description">Become a registered donor and join our community of generous supporters making a real impact.</p>
+                <button class="card-button" onclick="navigateTo('travel.html')">Request Help</button>
+            </div>
+
+            <div class="service-card schemes" onclick="handleCardClick('schemes')">
+                <div class="card-icon">🎯</div>
+                <h3 class="card-title">Schemes</h3>
+                <p class="card-description">Explore our various support schemes, programs, and initiatives designed to help different communities.</p>
+                <button class="card-button" onclick="navigateTo('scheme.html')">Request Help</button>
+            </div>
+        </div>
+
+        <div class="stats-section">
+            <h2>Our Impact</h2>
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <div class="stat-number">1,250+</div>
+                    <div class="stat-label">People Helped</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">₹50L+</div>
+                    <div class="stat-label">Donations Raised</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">500+</div>
+                    <div class="stat-label">Active Donors</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">25+</div>
+                    <div class="stat-label">Events Organized</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="contact-info">
+            <h3>Need Immediate Help?</h3>
+            <p style="margin: 15px 0;">Contact our 24/7 helpline: <strong>1800-XXX-HELP</strong></p>
+            <p>Email: support@helpportal.org | WhatsApp: +91-XXXXX-XXXXX</p>
+        </div>
+    </div>
+
+    <script>
+        function handleCardClick(cardType) {
+            const messages = {
+                help: "Redirecting to help request form...",
+                donate: "Opening secure donation portal...",
+                events: "Loading upcoming events...",
+                register: "Opening donor registration form...",
+                schemes: "Showing available schemes..."
+            };
+            
+            alert(messages[cardType]);
+            
+            // Add smooth scroll animation
+            const card = event.currentTarget;
+            card.style.transform = 'scale(0.95)';
+            setTimeout(() => {
+                card.style.transform = '';
+            }, 200);
+        }
+
+        function navigateTo(page) {
+            window.location.href = page;
+        }
+
+        // Add loading animation on page load
+        window.addEventListener('load', () => {
+            const cards = document.querySelectorAll('.service-card');
+            cards.forEach((card, index) => {
+                card.style.opacity = '0';
+                card.style.transform = 'translateY(50px)';
+                setTimeout(() => {
+                    card.style.transition = 'all 0.6s ease';
+                    card.style.opacity = '1';
+                    card.style.transform = 'translateY(0)';
+                }, index * 150);
+            });
+        });
+
+        // Add hover effect for better interactivity
+        document.querySelectorAll('.service-card').forEach(card => {
+            card.addEventListener('mouseenter', () => {
+                card.style.transform = 'translateY(-10px) scale(1.02)';
+            });
+            
+            card.addEventListener('mouseleave', () => {
+                card.style.transform = '';
+            });
+        });
+    </script>
+</body>
+</html>
